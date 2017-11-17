@@ -12,7 +12,9 @@ stride（int,truple,optional）——卷积步长
 torch.nn.functional.max_pool2d(input, kernel_size, stride=None, padding=0, dilation=1, ceil_mode=False, retrun_indices=False)
 input(minibatch*in_channels*iH*iW):输入的张量
 kernal_size(int,truple):池化区域的大小
-stride(int,truple):池化操作步长
-padding(int,truple):在输入上隐式的零填充
+stride(int,truple):池化操作步长，默认等于核的大小
+padding(int,truple):在输入上隐式的零填充，默认0
 ceil_mode:定义空间爱你输出形状的操作
 count_include_pad(int,truple):除以原始非填充图像内的元素
+
+
