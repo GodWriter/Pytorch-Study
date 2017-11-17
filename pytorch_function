@@ -6,7 +6,13 @@ bias:默认学习偏置，若设置false则该层不学习偏置
 torch.nn.Conv2d(in_channels, out_channels, kernal_size, stride=1,padding=0, dilation=1, groups=1, bias=True)
 in_channels(int)——输入信号的通道
 out_channels(int)——卷积产生的通道
-kerner_size(int或truple)——卷集核的尺寸
+kerner_size(int,truple)——卷集核的尺寸
 stride（int,truple,optional）——卷积步长
 
 torch.nn.functional.max_pool2d(input, kernel_size, stride=None, padding=0, dilation=1, ceil_mode=False, retrun_indices=False)
+input(minibatch*in_channels*iH*iW):输入的张量
+kernal_size(int,truple):池化区域的大小
+stride(int,truple):池化操作步长
+padding(int,truple):在输入上隐式的零填充
+ceil_mode:定义空间爱你输出形状的操作
+count_include_pad(int,truple):除以原始非填充图像内的元素
