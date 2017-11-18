@@ -32,3 +32,10 @@ shuffle(bool,optional):设置为True在每个epoch重新排列数据（默认：
 sampler(Sampler,optional):定义从数据集中提取样本的策略。如果指定，则忽略shuffle参数
 batch_sampler(sampler,可选)：和sampler一样，但一次返回一批索引。与batch_size, shuffle, sampler和drop_last相互排斥
 num_workers(int,可选):用于数据加载的子进程数，0表示数据将在主进程中加载（默认值：0）
+
+torchuvision.datasets.CIFAR10(root, train=True, transform=None, target_transform=None, download=False)
+root:cifar-10-batches-py根目录
+train:True=训练集，False=测试集
+download:True=从互联网下载数据，并将其放在root目录下。选择False不下载，什么都不干
+transform(可调用，可选):接收PIL映像并返回转换版本的函数
+target_transfrom(可调用，可选)：一个接收目标并转换它的函数
