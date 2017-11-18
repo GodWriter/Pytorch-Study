@@ -17,4 +17,9 @@ padding(int,truple):在输入上隐式的零填充，默认0
 ceil_mode:定义空间爱你输出形状的操作
 count_include_pad(int,truple):除以原始非填充图像内的元素
 
+x = torch.randn(4,4)
+y = x.view(2,8)
+y = x.view(-1,8)
+y = x.view(16)
+view(*args):返回具有相同数据但大小不同的新张量。返回的张量必须有与原张量相同的数据和相同数量的元素，但可以有不同的大小
 
