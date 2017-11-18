@@ -1,21 +1,21 @@
 torch.nn.Linear(in_features, out_features, bias=True)
-in_features:每个输入样本的大小
-out_features:每个输出样本的大小
-bias:默认学习偏置，若设置false则该层不学习偏置
+  >in_features:每个输入样本的大小
+  >out_features:每个输出样本的大小
+  >bias:默认学习偏置，若设置false则该层不学习偏置
 
 torch.nn.Conv2d(in_channels, out_channels, kernal_size, stride=1,padding=0, dilation=1, groups=1, bias=True)
-in_channels(int)——输入信号的通道
-out_channels(int)——卷积产生的通道
-kerner_size(int,truple)——卷集核的尺寸
-stride（int,truple,optional）——卷积步长
+  >in_channels(int)——输入信号的通道
+  >out_channels(int)——卷积产生的通道
+  >kerner_size(int,truple)——卷集核的尺寸
+  >stride（int,truple,optional）——卷积步长
 
 torch.nn.functional.max_pool2d(input, kernel_size, stride=None, padding=0, dilation=1, ceil_mode=False, retrun_indices=False)
-input(minibatch*in_channels*iH*iW):输入的张量
-kernal_size(int,truple):池化区域的大小
-stride(int,truple):池化操作步长，默认等于核的大小
-padding(int,truple):在输入上隐式的零填充，默认0
-ceil_mode:定义空间爱你输出形状的操作
-count_include_pad(int,truple):除以原始非填充图像内的元素
+  >input(minibatch*in_channels*iH*iW):输入的张量
+  >kernal_size(int,truple):池化区域的大小
+  >stride(int,truple):池化操作步长，默认等于核的大小
+  >padding(int,truple):在输入上隐式的零填充，默认0
+  >ceil_mode:定义空间爱你输出形状的操作
+  >count_include_pad(int,truple):除以原始非填充图像内的元素
 
 x = torch.randn(4,4)
 y = x.view(2,8)
@@ -26,16 +26,27 @@ view(*args):返回具有相同数据但大小不同的新张量。返回的张�
 torch.mean(x):返回所有x的平均值
 
 torch.utils.data.Dataloader(dataset, batch_size=1, shuffle=False, sampler=None, num_workers=0, collate_fn=<function default_collate>, pin_money=False, drop_last=False)
-dataset(Dataset):从中加载数据的数据集
-batch_size(int,optional):批训练的数据个数（默认:1）
-shuffle(bool,optional):设置为True在每个epoch重新排列数据（默认：False,一般打乱比较好）
-sampler(Sampler,optional):定义从数据集中提取样本的策略。如果指定，则忽略shuffle参数
-batch_sampler(sampler,可选)：和sampler一样，但一次返回一批索引。与batch_size, shuffle, sampler和drop_last相互排斥
-num_workers(int,可选):用于数据加载的子进程数，0表示数据将在主进程中加载（默认值：0）
+  >dataset(Dataset):从中加载数据的数据集
+  >batch_size(int,optional):批训练的数据个数（默认:1）
+  >shuffle(bool,optional):设置为True在每个epoch重新排列数据（默认：False,一般打乱比较好）
+  >sampler(Sampler,optional):定义从数据集中提取样本的策略。如果指定，则忽略shuffle参数
+  >batch_sampler(sampler,可选)：和sampler一样，但一次返回一批索引。与batch_size, shuffle, sampler和drop_last相互排斥
+  >num_workers(int,可选):用于数据加载的子进程数，0表示数据将在主进程中加载（默认值：0）
 
 torchuvision.datasets.CIFAR10(root, train=True, transform=None, target_transform=None, download=False)
-root:cifar-10-batches-py根目录
-train:True=训练集，False=测试集
-download:True=从互联网下载数据，并将其放在root目录下。选择False不下载，什么都不干
-transform(可调用，可选):接收PIL映像并返回转换版本的函数
-target_transfrom(可调用，可选)：一个接收目标并转换它的函数
+  >root:cifar-10-batches-py根目录
+  >train:True=训练集，False=测试集
+  >download:True=从互联网下载数据，并将其放在root目录下。选择False不下载，什么都不干
+  >transform(可调用，可选):接收PIL映像并返回转换版本的函数
+  >target_transfrom(可调用，可选)：一个接收目标并转换它的函数
+
+pytorch torchvision transfrom 图形变换，可以用Compose将多个transform组合起来使用
+transfrom = transfroms.Compose([transfroms.ToTensor(), transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5)),])
+transforms.Normalize(mean, std):给定均值(R,G,B)，方差(R,G,B), 将会把Tensor正则化。即:Normalized_image=(image-mean)/std
+  >mean(sequence):序列R,G,B的均值
+  >std(sequence):序列R,G,B的平均标准偏差
+  >返回结果：规范化的图片
+  >返回样式：tensor张量
+transforms.ToTensor:把一个取值范围是[0,255]的PIL.Image或者shape为(H,W,C)的numpy.ndarray,转换为形状为[C,H,W],取值范围是[0,1.0]的torch.FloadTensor
+  >返回结果：转换后的图像
+  >返回样式：Tensor张量
