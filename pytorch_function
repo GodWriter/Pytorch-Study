@@ -24,3 +24,11 @@ y = x.view(16)
 view(*args):返回具有相同数据但大小不同的新张量。返回的张量必须有与原张量相同的数据和相同数量的元素，但可以有不同的大小
 
 torch.mean(x):返回所有x的平均值
+
+torch.utils.data.Dataloader(dataset, batch_size=1, shuffle=False, sampler=None, num_workers=0, collate_fn=<function default_collate>, pin_money=False, drop_last=False)
+dataset(Dataset):从中加载数据的数据集
+batch_size(int,optional):批训练的数据个数（默认:1）
+shuffle(bool,optional):设置为True在每个epoch重新排列数据（默认：False,一般打乱比较好）
+sampler(Sampler,optional):定义从数据集中提取样本的策略。如果指定，则忽略shuffle参数
+batch_sampler(sampler,可选)：和sampler一样，但一次返回一批索引。与batch_size, shuffle, sampler和drop_last相互排斥
+num_workers(int,可选):用于数据加载的子进程数，0表示数据将在主进程中加载（默认值：0）
