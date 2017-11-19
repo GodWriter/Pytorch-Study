@@ -1,1 +1,13 @@
+import torch 
+import torchvision
+import torch.nn as nn
+import numpy as np
+import torch.utils.data as data
+import torchvision.transforms as transforms
+import torchvision.datasets as dsets
+from torch.autograd import Variable
 
+#======================== Linear Regression =======================#
+x = Variable(torch.randn(5,3))
+y = Variable(torch.randn(5,2))
+linear = nn.Linear(3,2)
