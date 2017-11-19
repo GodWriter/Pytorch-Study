@@ -56,6 +56,9 @@ torch.nn.Linear(in_features, out_features, bias=True)
   >in_features:每个输入样本的大小
   >out_featrues:每个输出样本的大小
   >bias:若设置为False,这层不会学习偏置。默认值：True
+形状：
+  >输入：6(N, in_features) #N为训练数据个数
+  >输出：(N, out_feature)  #N为输出结果个数
 linear = torch.nn.linear(3,2)
 变量：
   >linear.weight:形状为(out_features * in_features)的模块中可学习的权值
