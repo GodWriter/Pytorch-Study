@@ -50,3 +50,14 @@ transforms.Normalize(mean, std):给定均值(R,G,B)，方差(R,G,B), 将会把Te
 transforms.ToTensor:把一个取值范围是[0,255]的PIL.Image或者shape为(H,W,C)的numpy.ndarray,转换为形状为[C,H,W],取值范围是[0,1.0]的torch.FloadTensor
   >返回结果：转换后的图像
   >返回样式：Tensor张量
+  
+torch.nn.Linear(in_features, out_features, bias=True)
+对输入数据做线性变换： y = Ax + b
+  >in_features:每个输入样本的大小
+  >out_featrues:每个输出样本的大小
+  >bias:若设置为False,这层不会学习偏置。默认值：True
+linear = torch.nn.linear(3,2)
+变量：
+  >linear.weight:形状为(out_features * in_features)的模块中可学习的权值
+  >linear.bias:形状为(out_features)的模块中可学习的偏置
+linear.parameters() ——> torch.optim.SGD(linear.parameters(), lr=0.001, momentum=0.9) 传给优化器时的参数
