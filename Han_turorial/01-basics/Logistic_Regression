@@ -55,3 +55,14 @@ for epoch in range(num_epochs):
         if (i+1)%100 == 0: #每100批数据输出一次训练进度。我们将60000张图片，按照每批100个分成100组，然后进行输入训练
             print('Epoch:[%d/%d], Step:[%d/%d], Loss: %.4f'
                   %(epoch+1, num_epochs, i+1, len(train_dataset)//batch_size,loss.data[0]))
+                  
+#开始测试模型
+correct = 0 #准确率
+total = 0 #
+for images, labels in test_loader:#开始测试，每100组数据为一轮
+    images = Variable(images.view(-1, 28*28)) #同样的张量[100,784]
+    outputs = model(images) #张量应该为[100,10]
+    _, predicted = torch.max(outputs.data, 1) #返回输入张量给定维度上每行的最大值，并同时返回每个最大值的位置索引
+    total += labels.size(0) #测试数据加一
+    correct += (predicted == labels).sum() #predict为[100,1],label也为[100,1],一一对应并将相同个数累加，得到预测正确个数
+print('Accuracy of the model on the 10000 test images: %d %%'%(100 * correct/total))
