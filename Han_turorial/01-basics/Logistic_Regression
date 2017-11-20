@@ -4,53 +4,54 @@ import torchvision.datasets as dsets
 import torchvision.transforms as transforms
 from torch.autograd import Variable
 
-#global parameters
-input_size = 784
-num_classes = 10
-num_epochs = 5
-batch_size = 100
-learning_rate = 0.001
+#设置全局变量
+input_size = 784 #输入神经元的个数
+num_classes = 10 #输出神经元的个数,一共有10类数字，共10个标签
+num_epochs = 5 #训练轮数
+batch_size = 100 #每轮训练中每批训练数据个数
+learning_rate = 0.001 #学习率
 
-#MNIST Dataset(Images and Labels)
+#加载MNIST数据集(图片，标签)
 train_dataset = dsets.MNIST(root='/home/godwriter/zhu/data/MNIST',
-                            train=True,transform=transforms.ToTensor(),download=False)
+                            train=True,transform=transforms.ToTensor(),download=False) #加载训练数据集
 test_dataset = dsets.MNIST(root='/home/godwriter/zhu/data/MNIST',
-                           train=False,transform=transforms.ToTensor())
+                           train=False,transform=transforms.ToTensor()) #加载测试数据集
 
 train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
-                                           batch_size=batch_size, shuffle=True)
+                                           batch_size=batch_size, shuffle=True) #导入训练数据集，并且分批次,shuffle为True会打乱数据
 test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
-                                          batch_size=batch_size, shuffle=False)
+                                          batch_size=batch_size, shuffle=False) #导入测试数据集，并且分批次,shuffle为False不打乱数据
 
 #Model
 class LogisticRegression(nn.Module):
     def __init__(self, input_size, num_classes):
         super(LogisticRegression, self).__init__()
-        self.linear = nn.Linear(input_size,num_classes)
+        self.linear = nn.Linear(input_size,num_classes) #定义线性训练模型
         
-    def forward(self, x):
+    def forward(self, x): #定义前向传播
         out = self.linear(x)
         return out
 
 model = LogisticRegression(input_size, num_classes)
 
 #Loss and Optimizer,Softmax is internally computed, Set parameters to be updated
-criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+criterion = nn.CrossEntropyLoss() #定义交叉熵
+optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate) #定义随机梯度下降优化器
 
 #Training the Module
 for epoch in range(num_epochs):
-    for i, (images, labels) in enumerate(train_loader):
-        images = Variable(images.view(-1, 28*28))
-        labels = Variable(labels)
+    for i, (images, labels) in enumerate(train_loader): #迭代进行数据训练，train_loader共600项
+        images = Variable(images.view(-1, 28*28)) #将images转化为Variable,image是[32*32],转换成一维784个。因为每批100张图片，images的
+                                                  #的size为[100, 784].
+        labels = Variable(labels) #将labels转换为Variable
         
         #Forward + Backward + Optimizer
-        optimizer.zero_grad()
-        outputs = model(images)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
+        optimizer.zero_grad() #梯度清零
+        outputs = model(images) #进行前向传播
+        loss = criterion(outputs, labels) #计算损失函数
+        loss.backward() #进行反向传播
+        optimizer.step() #优化参数
         
-        if (i+1)%100 == 0:
+        if (i+1)%100 == 0: #每100批数据输出一次训练进度。我们将60000张图片，按照每批100个分成100组，然后进行输入训练
             print('Epoch:[%d/%d], Step:[%d/%d], Loss: %.4f'
                   %(epoch+1, num_epochs, i+1, len(train_dataset)//batch_size,loss.data[0]))
