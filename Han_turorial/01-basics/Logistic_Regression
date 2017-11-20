@@ -65,4 +65,4 @@ for images, labels in test_loader:#开始测试，每100组数据为一轮
     _, predicted = torch.max(outputs.data, 1) #返回输入张量给定维度上每行的最大值，并同时返回每个最大值的位置索引
     total += labels.size(0) #测试数据加一
     correct += (predicted == labels).sum() #predict为[100,1],label也为[100,1],一一对应并将相同个数累加，得到预测正确个数
-print('Accuracy of the model on the 10000 test images: %d %%'%(100 * correct/total))
+print('Accuracy of the model on the 10000 test images: %d %%'%(100 * correct/total)) #将所有的正确个数/所有训练数据，得到总正确率
