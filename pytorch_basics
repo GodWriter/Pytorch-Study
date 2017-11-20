@@ -7,7 +7,34 @@ import torchvision.transforms as transforms
 import torchvision.datasets as dsets
 from torch.autograd import Variable
 
-#======================== Linear Regression =======================#
-x = Variable(torch.randn(5,3))
-y = Variable(torch.randn(5,2))
-linear = nn.Linear(3,2)
+#======================== Basic autograd example =======================#
+x = Variable(torch.randn(5,3)) #定义x，作为下面简单线性模型的训练数据，共有5批数据，每批数据3个标签
+y = Variable(torch.randn(5,2)) #定义y, 作为每批数据真实对应的y，每批数据应该对应两个y
+
+linear = nn.Linear(3,2) #建立线性模型
+print('w:',linear.weight) #打印出该线性模型的w参数
+print('b:',linear.bias) #打印出该线性模型的bias参数
+
+criterion = nn.MSELoss() #定义一个损失函数
+optimizer = torch.optim.SGD(linear.parameters(),lr=0.01) #定义一个优化方法
+ 
+pred = linear(x) #进行一次前向传播
+loss = criterion(pred, y) #利用已经定义好的损失函数，计算损失
+print('loss:', loss.data[0]) #打印出本次损失
+ 
+loss.backward() #进行一次反向传播
+#print('dL/dw:__another way',x.grad.data)#初学者犯的错误，在一开始学自动求导
+                                         #机制时，都是初始化变量时，让它required_grad=True
+                                         #但是，在这个简单的线性模型里面，我们需要自动求导的
+                                         #并不是我们一开始定义的变量，而是Linear中包含的参数
+                                         #weight和bias.故我们一开始定义的x,y，x是训练数据，y是
+                                         #其真实对应的标签，因为不需要对他们求导，故未设置
+                                         #required_grad，应该默认是False
+print('dL/dw:', linear.weight.grad) #打印出weight的梯度
+print('dL/db:', linear.bias.grad) #打印出bias的梯度
+
+optimizer.step() #进行第一次梯度优化
+
+pred = linear(x) #进行一次前向传播
+loss = criterion(pred, y) #计算再优化过一次参数后的损失
+print('loss after 1 step optimizer:', loss.data[0]) #看看第二次的损失值是否下降了
