@@ -64,3 +64,8 @@ linear = torch.nn.linear(3,2)
   >linear.weight:形状为(out_features * in_features)的模块中可学习的权值
   >linear.bias:形状为(out_features)的模块中可学习的偏置
 linear.parameters() ——> torch.optim.SGD(linear.parameters(), lr=0.001, momentum=0.9) 传给优化器时的参数
+
+dset.CIFAR10(root, train=True, transform=None, target_transform=None, download=False)
+  >root:数据根目录
+  >train:True代表训练集，False代表测试集
+  >download:True=从互联网上下载数据,并将其放在root目录下，False=什么都不干
