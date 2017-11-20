@@ -38,3 +38,50 @@ optimizer.step() #进行第一次梯度优化
 pred = linear(x) #进行一次前向传播
 loss = criterion(pred, y) #计算再优化过一次参数后的损失
 print('loss after 1 step optimizer:', loss.data[0]) #看看第二次的损失值是否下降了
+
+#======================== Loading data from numpy ========================#
+a = np.array([[1,2],[3,4]])
+b = torch.from_numpy(a) #将numpy转换为tensor
+c = b.numpy() #将tensor转换为numpy
+
+#===================== Implementing the input pipline =====================#
+#下载和建立数据集
+train_dataset = dsets.CIFAR10(root='../data/', train=True, transfrom=transform.ToTensor(), download=True)
+image, label = train_dataset[0] #获取数据集的第一组数据和其对应的标签
+print(image.size()) #打印图片的张量
+print(label) #打印图片对应的标签
+
+#数据加载器
+train_loader = torch.utils.data.Dataloader(dataset=train_dataset,batch_size=100,shuffle=True,num_workers=2)
+#当迭代开始时，队列和进程开始从数据集中加载数据
+data_iter = iter(train_loader)
+#获取小批量数据的图片和其对应的标签
+image, lables = data_iter.next()
+
+#开发中数据的装载
+for images,labels in train_loader:
+    pass #训练数据的代码
+    
+#===================== 自定义数据集管道 =====================#
+#你必须按照下面的步骤建立数据集
+class CustomDataset(data.Dataset):
+    def __init__(self):
+        #TODO
+        #1. 初始化文件路径或文件名列表
+        pass
+    def __getitem__(self, index):
+        #TODO
+        #1. 从文件中读取一个数据（e.g. 使用numpy.fromfile,PIL.Image.open）
+        #2. 数据预处理（e.g. torchvision.Transform）
+        #3. 返回一对数据（e.g. 图片和标签）
+        pass
+    def __len__(self):
+        #你必须将0改成你数据集的全部大小
+        return 0
+        
+#然后，你可以使用预置的数据集了
+custom_dataset = CustomDataset()
+train_loader = torch.utils.data.DataLoader(dataset=custom_dataset, batch_size=100, shuffle=True, num_workers=2)
+
+
+
