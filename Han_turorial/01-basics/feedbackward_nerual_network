@@ -1,0 +1,73 @@
+
+import torch
+import torch.nn as nn
+import torchvision.datasets as dsets
+import torchvision.transforms as transforms
+from torch.autograd import Variable
+
+#全局参数
+input_size = 784 #输入神经元个数
+hidden_size = 500 #隐藏层神经元个数
+num_classes = 10 #分类标签个数
+num_epochs = 5 #训练轮数
+batch_size = 100 #每批训练数据个数
+learning_rate = 0.001 #学习率
+
+#MNIST数据集
+train_dataset = dsets.MNIST(root='/home/godwriter/zhu/data/MNIST',train=True,
+                            transform=transforms.ToTensor(),download=False) #加载训练数据
+test_dataset = dsets.MNIST(root='/home/godwriter/zhu/data/MNIST',train=False,
+                           transform=transforms.ToTensor(),download=False) #加载测试数据
+#数据加载器
+train_loader = torch.utils.data.DataLoader(dataset=train_dataset,batch_size=batch_size,shuffle=True) #将训练数据切分
+test_loader = torch.utils.data.DataLoader(dataset=test_dataset,batch_size=batch_size,shuffle=True) #将测试数据切分
+
+#神经网络（一隐藏层）
+class Net(nn.Module):
+    def __init__(self, input_size, hidden_size, num_classes):
+        super(Net, self).__init__()
+        self.fc1 = nn.Linear(input_size, hidden_size) #输入层到隐藏层，对输入数据做线性变换
+        self.relu = nn.ReLU() #对输入运用ReLU函数
+        self.fc2 = nn.Linear(hidden_size, num_classes) #隐藏层到输出层，运用线性变换
+        
+    def forward(self, x):
+        out = self.fc1(x) #输入层——>隐藏层（线性变换）
+        out = self.relu(out) #输入层——>隐藏层（做ReLU运算）
+        out = self.fc2(out) #隐藏层——>输出层（线性变换）
+        return out #返回输出结果
+    
+net = Net(input_size, hidden_size, num_classes) #构建神经网络，传入所有层需要的参数
+
+#定义损失函数和优化器
+criterion = nn.CrossEntropyLoss() #定义交叉熵
+optimizer = torch.optim.Adam(net.parameters(), lr=learning_rate) #运用Adam优化算法
+
+#训练模型
+for epoch in range(num_epochs):
+    for i, (images, labels) in enumerate(train_loader):
+        #将Tensor转换为Variable
+        images = Variable(images.view(-1, 28*28)) #将28*28图片变成[1,784],每批数据100组，故为[100,784]
+        labels = Variable(labels) #将labels放入Variable中，张量为[100,1]
+        
+        #前向传播 + 反向 + 优化
+        optimizer.zero_grad() #梯度清零
+        outputs = net(images) #将训练数据放入神经网络
+        loss = criterion(outputs, labels) #计算损失
+        loss.backward() #进行反向传播
+        optimizer.step() #进行参数优化
+        
+        if (i+1)%100 == 0: #每100轮进行一次输出
+            print('Epoch [%d/%d], Step [%d/%d], Loss:%.4f'
+                  %(epoch+1, num_epochs, i+1, len(train_dataset)//batch_size, loss.data[0]))
+            
+#测试模型
+correct = 0 #正确率
+total = 0 #总共测试数据数
+for images, labels in test_loader:
+    images = Variable(images.view(-1, 28*28)) #加载测试数据，张量为[100,784]
+    outputs = net(images) #将测试数据放入神经网络入口
+    _, predicted = torch.max(outputs.data, 1) #取输出的预测值的最大值所在位置
+    total += labels.size(0) #计算当前测试数据个数
+    correct += (predicted == labels).sum() #将预测值和真实值比较，并求和正确个数
+    
+print('Accuracy of the network on the 10000 test images:%d %%'%(100 * correct/total))
