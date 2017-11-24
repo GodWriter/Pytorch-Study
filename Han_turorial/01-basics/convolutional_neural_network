@@ -4,29 +4,29 @@ import torchvision.datasets as dsets
 import torchvision.transforms as transforms
 from torch.autograd import Variable
 
-#global parameters
-num_epochs = 5
-batch_size = 100
-learning_rate = 0.001
+#全局参数
+num_epochs = 5 #训练论述
+batch_size = 100 #每批训练数据个数
+learning_rate = 0.001 #学习速率
 
-#MNIST Dataset
+#加载MNIST数据集
 train_dataset = dsets.MNIST(root='E:/Code_package/pythonwork/Pytorch/data/MNIST', 
                             train=True, transform=transforms.ToTensor(), download=False)
 test_dataset = dsets.MNIST(root='E:/Code_package/pythonwork/Pytorch/data/MNIST',
                            train=False, transform=transforms.ToTensor(), download=False)
 
-#Data Loader
+#切分数据集
 train_loader = torch.utils.data.DataLoader(dataset=train_dataset,batch_size=batch_size,
                                            shuffle=True)
 test_loader = torch.utils.data.DataLoader(dataset=test_dataset,batch_size=batch_size,
                                           shuffle=True)
 
-#CNN Model(2 conv layer)
+#卷积模型(2个卷积层)
 class CNN(nn.Module):
     def __init__(self):
-        super(CNN, self).__init__()
+        super(CNN, self).__init__() #父类继承CNN
         self.layer1 = nn.Sequential(
-                nn.Conv2d(1, 16, kernel_size=5, padding=2),
+                nn.Conv2d(1, 16, kernel_size=5, padding=2), #卷积层，卷积核16*5*5*1，输出16通道，输入为1通道
                 nn.BatchNorm2d(16),
                 nn.ReLU(),
                 nn.MaxPool2d(2))
