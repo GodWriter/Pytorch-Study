@@ -25,38 +25,38 @@ test_loader = torch.utils.data.DataLoader(dataset=test_dataset,batch_size=batch_
 class CNN(nn.Module):
     def __init__(self):
         super(CNN, self).__init__() #父类继承CNN
-        self.layer1 = nn.Sequential(
+        self.layer1 = nn.Sequential( #第一层卷积加一系列对数据的处理
                 nn.Conv2d(1, 16, kernel_size=5, padding=2), #卷积层，卷积核16*5*5*1，输出16通道，输入为1通道
-                nn.BatchNorm2d(16),
-                nn.ReLU(),
-                nn.MaxPool2d(2))
-        self.layer2 = nn.Sequential(
-                nn.Conv2d(16, 32, kernel_size=5,padding=2),
-                nn.BatchNorm2d(32),
-                nn.ReLU(),
-                nn.MaxPool2d(2))
-        self.fc = nn.Linear(7*7*32, 10)
+                nn.BatchNorm2d(16), #进行批标准化，拥有16对需要更新的参数，因为有16个卷积核
+                nn.ReLU(), #对输入做ReLU函数运算
+                nn.MaxPool2d(2)) #池化窗口为2的池化层
+        self.layer2 = nn.Sequential( #第二层卷积加一系列对数据的处理
+                nn.Conv2d(16, 32, kernel_size=5,padding=2), #卷积层，卷积核为32*5*5*16,输出32通道，输入为16通道
+                nn.BatchNorm2d(32), #进行批标准化，拥有32对需要更新的参数，因为有32个卷积核
+                nn.ReLU(), #对输入做ReLU函数运算
+                nn.MaxPool2d(2)) #池化窗口为2的池化层
+        self.fc = nn.Linear(7*7*32, 10) #全连接层,10个输出,输入将上一层的32个7*7的输出变成一维向量
         
-    def forward(self, x):
+    def forward(self, x): #前向传播
         out = self.layer1(x)
         out = self.layer2(out)
-        out = out.view(out.size(0), -1)
+        out = out.view(out.size(0), -1) #处理输出
         out = self.fc(out)
         return out
     
-cnn = CNN()
+cnn = CNN() #定义卷积神经网络
 
 #Loss and Optimizer
-criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(cnn.parameters(), lr=learning_rate)
+criterion = nn.CrossEntropyLoss() #采用交叉验证
+optimizer = torch.optim.Adam(cnn.parameters(), lr=learning_rate) #采用Adam优化算法
 
-#Train the Model
+#训练模型
 for epoch in range(num_epochs):
     for i, (images,labels) in enumerate(train_loader):
         images = Variable(images)
         labels = Variable(labels)
         
-        #Forward + Backward + Optimize
+        #前向 + 后向 + 优化
         optimizer.zero_grad()
         outputs = cnn(images)
         loss = criterion(outputs, labels)
@@ -67,7 +67,7 @@ for epoch in range(num_epochs):
             print('Epoch [%d/%d], Iter [%d/%d] Loss:%.4f'
                   %(epoch+1, num_epochs, i+1, len(train_dataset)//batch_size, loss.data[0]))
             
-#Test the Model
+#测试模型
 cnn.eval()
 correct = 0
 total = 0
