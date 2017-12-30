@@ -1,0 +1,107 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Dec 29 17:24:27 2017
+
+@author: GodWriter
+"""
+
+import torch
+import torch.nn as nn
+import torchvision.datasets as dsets
+import torchvision.transforms as transforms
+from torch.autograd import Variable
+
+#全局参数
+sequence_length = 28 #序列长度
+input_size = 28 #输入的特征维度
+hidden_size = 128 #隐藏层的特征维度
+num_layers = 2 #层数
+num_classes = 10 #最后的分类个数
+batch_size = 100 #每轮训练批数
+num_epochs = 2 #训练论数
+learning_rate = 0.01 #学习速率
+
+#加载MNIST Dataset
+train_dataset = dsets.MNIST(root='E:/Code_package/pythonwork/Pytorch/data/MNIST',
+                            train=True,
+                            transform=transforms.ToTensor(),
+                            download=False)
+
+test_dataset = dsets.MNIST(root='E:/Code_package/pythonwork/Pytorch/data/MNIST',
+                           train=False,
+                           transform=transforms.ToTensor())
+
+#切分数据集到Data Loader
+train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
+                                           batch_size=batch_size,
+                                           shuffle=True)
+
+test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
+                                          batch_size=batch_size,
+                                          shuffle=False)
+
+#RNN Model (Many-to-One)
+class RNN(nn.Module):
+    def __init__(self, input_size, hidden_size, num_layers, num_classes):
+        super(RNN, self).__init__()
+        #设置RNN的隐藏层维度
+        self.hidden_size = hidden_size
+        #设置RNN的层数
+        self.num_layers = num_layers
+        #初始化RNN结构，将刚才定义的参数传入
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)#input_size:输入的特征维度，hidden_size:隐藏状态的特征维度，num_layers:层数，batch_first:若为True,输入输出Tensor的形状为(batch,seq,feature)
+        self.fc = nn.Linear(hidden_size, num_classes)
+        
+    def forward(self, x):
+        #Set initial states
+        h0 = Variable(torch.zeros(self.num_layers, x.size(0), self.hidden_size))#x.size(0)代表的就是batch_size
+        c0 = Variable(torch.zeros(self.num_layers, x.size(0), self.hidden_size))
+        
+        #Forward propagate RNN
+        #往定义的RNN结构中传入训练数据
+        out, _ = self.lstm(x, (h0, c0))
+        
+        #Decode hidden state of last time step
+        #将最后一层的最后一个时间段的数据拿出来展开成成一维向量
+        out = self.fc(out[:, -1, :])#[:, -1, :]中第一个:代表所有的图片，第二个冒号代表最后一行，第三个冒号代表所有列
+        return out
+
+rnn = RNN(input_size, hidden_size, num_layers, num_classes)
+
+#Loss and Optimizer
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(rnn.parameters(), lr=learning_rate)
+
+#Train the Model
+for epoch in range(num_epochs):
+    for i, (images, labels) in enumerate(train_loader):
+        #将images处理成LSTM接受数据的形式
+        images = Variable(images.view(-1, sequence_length, input_size))
+        labels = Variable(labels)
+        
+        #Forward + Backward + Optimize
+        #梯度清0
+        optimizer.zero_grad()
+        outputs = rnn(images)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+        
+        if (i+1) % 100 == 0:
+            print('Epoch [%d/%d], Step [%d/%d], Loss: %.4f'
+                  %(epoch+1, num_epochs, i+1, len(train_dataset)//batch_size, loss.data[0]))
+
+#Test the Model
+correct = 0
+total = 0
+for images, labels in test_loader:
+    images = Variable(images.view(-1, sequence_length, input_size))
+    outputs = rnn(images)
+    _, predicted = torch.max(outputs.data, 1)
+    total += labels.size(0)
+    correct += (predicted == labels).sum()
+    
+print('Test Accuracy of the model on the 10000 test image: %d %%' % (100 * correct / total))
+
+#Save the Model
+torch.save(rnn.state_dict(), 'rnn.pkl')
