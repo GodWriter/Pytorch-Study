@@ -97,7 +97,7 @@ total = 0
 for images, labels in test_loader:
     images = Variable(images.view(-1, sequence_length, input_size))
     outputs = rnn(images)
-    _, predicted = torch.max(outputs.data, 1)
+    _, predicted = torch.max(outputs.data, 1)#_存放每列最大的值，predicted存放每列最大值所在的位置
     total += labels.size(0)
     correct += (predicted == labels).sum()
     
