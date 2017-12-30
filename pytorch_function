@@ -95,8 +95,25 @@ torch.nn.LSTM(*args, **kwargs)
   >hidden_size:隐藏状态的特征维度
   >num_layers:层数（和时序展开要区分开）
   >bias:如果为False，那么LSTM将不会使用偏置b_ih和b_hh。默认为True
-  >batch_first:如果为True，那么输入和输出的Tensor的形状为(batch, seq, feature)
+  >batch_first:因为nn.lstm()接受的数据输入是（序列长度，batch，输入维度），这和我们cnn的输入方式
+               不太一致。如果为True，那么输入和输出的Tensor的形状为(batch, seq, feature
   >dropout:若果非0的话，将会在RNN的输出上加个dropout，最后一层除外
   >bidirectional:如果为True，将会变成一个双向RNN。默认为False
 LSTM输入：input,(h_0, c_0)
-  >
+  >input: (batch_size, sequence_length, features)，在batch_first为true的情况下
+  >h0: (num_layers*num_directions, batch, hidden_size)
+       第一个参数取决于网络层数是否是双向，如果双向需要乘2；如果多层需要乘以网络层数
+  >c0: 三个参数和h0一致
+LSTM输出：output, (h_out, c_out)
+  > out, (h_out, c_out) = lstm(x, (h0, c0))，这样即可得到输出
+  >output(sequence_length, batch_size, hidden_size*num_direction)保存LSTM最后一层的输出h_t
+  >h_out(num_layers*num_directions, batch, hidden_size)时间t=seq_len的隐藏层状态
+  >c_out(num_layers*num_directions, batch, hidden_size)时间t=seq_len的cell状态
+对LSTM输入输出的理解：
+ >输入：在LSTM的forward函数中，可以定义h0和c0，不定义默认都为0。不可以把LSTM的输入输出和
+  LSTM中定义结构的参数搞混，但是输入的维度必须要符合定义的LSTM结构。还有input是三维的，
+  第一维表示该批次训练数据共有多少个（几张图），第二维表示每个训练数据的序列长度（比如
+  说，28x28的图片，28行代表有28个序列，分成28个序列传），第三维表示每个训练数据中一个
+  序列中包含的特征个数（图片中的28列，代表每一个序列特征28个）。
+ >输出：输出有最后一层的所有h的状态，还有h_out和c_out代表t=seq_len的单独单独状态，包含
+  所有层的状态而不仅仅是第一层
