@@ -117,3 +117,18 @@ LSTM输出：output, (h_out, c_out)
   序列中包含的特征个数（图片中的28列，代表每一个序列特征28个）。
  >输出：输出有最后一层的所有h的状态，还有h_out和c_out代表t=seq_len的单独单独状态，包含
   所有层的状态而不仅仅是第一层
+
+class torch.nn.Embedding(num_embeddings, embedding_dim, padding_idx=None, max_norm=None, norm_type=2, scale_grad_by_freq=False, spare=False)
+一个保存了固定大小字典的简单查找表，这个模块常用来保存词嵌入和用下表检索它们。模块的输入是一个下标的列表，输出是对应的词嵌入。
+参数：
+  >num_embeddings(int): 嵌入字典的大小
+  >embedding_dim(int): 每个嵌入向量的大小
+  >padding_idx(int, optional): 如果提供的话，输出遇到此下标时用零填充
+  >max_norm(float, optional): 如果提供的话，会重新归一化词嵌入，使它们的范数小于提供的值
+  >norm_type(float, optional): 对于max_norm选项计算p范数时的p
+  >scale_grad_by_freq(boolean, optional): 如果提供的话，会根据字典中单词的频率缩放梯度
+变量：
+  >weight(Tensor): 形状为(num_embeddings, embedding_dim)的模块中可学习的权值
+形状：
+  >输入：LongTensor(N, W), N=mini-batch, W=每个mini-batch中提取的下标数
+  >输出：(N, W, embedding_dim)
