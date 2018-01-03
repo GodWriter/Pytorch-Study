@@ -12,3 +12,5 @@ Test phase
   在test phase中，encoder部分几乎和training phase一致，唯一的区别就是将会使用batchnorm来移动平均值和方差，从而去取代小批量统计数据，这个
 简单使用encoder.eval()就可以办到了。在decoder部分，test phase和training phase有很大的不同。在test phase中，LSTM decoder看不到图片的
 描述。为了处理这个问题，LSTM将前一步生成的单词作为下一步输入的输入值，这个可以使用一个for-loop来应用。
+
+https://download.pytorch.org/models/resnet152-b121ed2d.pth
